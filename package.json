@@ -1,0 +1,22 @@
+{
+  "name": "sodreset",
+  "version": "1.0.0",
+  "description": "discord bot to track and announce sod raid resets",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bot",
+    "discord",
+    "season",
+    "of",
+    "discovery"
+  ],
+  "author": "agu",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1"
+  }
+}
