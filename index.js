@@ -38,3 +38,31 @@ for (const folder of folders) {
     }
   }
 }
+
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+
+  const command = interaction.client.commands.get(interaction.commandName);
+
+  if (!command) {
+    console.error(`No command matches ${interaction.commandName}.`);
+  }
+
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp({
+        content: "Error executing the command!",
+        ephemeral: true,
+      });
+    } else {
+      await interaction.reply({
+        content: "There was an error executing the command",
+        ephemeral: true,
+      });
+    }
+  }
+
+  console.log(interaction);
+});
