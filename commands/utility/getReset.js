@@ -29,6 +29,7 @@ setTimeout(() => {
 }, 2000);
 
 module.exports = {
+  cooldown: 5,
   data: new SlashCommandBuilder()
     .setName("reset")
     .setDescription("Replies with next raid reset."),

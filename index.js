@@ -16,6 +16,7 @@ client.once(Events.ClientReady, (readyClient) => {
 client.login(token);
 
 client.commands = new Collection();
+client.cooldowns = new Collection();
 
 const foldersPath = path.join(__dirname, "commands");
 const folders = fs.readdirSync(foldersPath);
@@ -42,11 +43,40 @@ for (const folder of folders) {
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
+  const { cooldowns } = interaction.client;
+
   const command = interaction.client.commands.get(interaction.commandName);
 
   if (!command) {
     console.error(`No command matches ${interaction.commandName}.`);
   }
+
+  if (!cooldowns.has(command.data.name)) {
+    cooldowns.set(command.data.name, new Collection());
+  }
+
+  const now = Date.now();
+  const timestamps = cooldowns.get(command.data.name);
+  const defaultCdDuration = 3;
+  const cdAmount = (command.cooldown ?? defaultCdDuration) * 1000;
+
+  console.log(timestamps);
+  if (timestamps.has(interaction.user.id)) {
+    const expiration = timestamps.get(interaction.user.id) + cdAmount;
+
+    if (now < expiration) {
+      const expired = Math.round(expiration / 1000);
+      return interaction.reply({
+        content: `On cooldown, for ${command.data.name}, you can use it again in ${expired}.`,
+        ephemeral: true,
+      });
+    }
+  }
+  console.log(interaction.user.id);
+  timestamps.set(interaction.user.id, now);
+  setTimeout(() => {
+    timestamps.delete(interaction.user.id);
+  }, cdAmount);
 
   try {
     await command.execute(interaction);
@@ -63,6 +93,4 @@ client.on(Events.InteractionCreate, async (interaction) => {
       });
     }
   }
-
-  console.log(interaction);
 });
