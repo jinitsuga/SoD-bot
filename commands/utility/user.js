@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
+  cooldown: 6,
   data: new SlashCommandBuilder()
     .setName("user")
     .setDescription("gives user info"),
