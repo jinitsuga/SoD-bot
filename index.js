@@ -73,7 +73,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   }
   console.log(interaction.user.id);
+
   timestamps.set(interaction.user.id, now);
+
   setTimeout(() => {
     timestamps.delete(interaction.user.id);
   }, cdAmount);
