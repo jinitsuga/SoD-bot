@@ -3,14 +3,32 @@ const fs = require("node:fs");
 
 const path = require("node:path");
 
+const updateGuilds = require("../bot/utils/updateGuilds");
+
 const { Client, Collection, Events, GatewayIntentBits } = require("discord.js");
 
 const token = process.env.DISCORD_TOKEN;
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+});
 
 client.once(Events.ClientReady, (readyClient) => {
   console.log(`Ready. Logged in as ${readyClient.user.tag}`);
+});
+
+// Saves guilds (servers) ids in case the bot restarts or goes offline.
+const guildsData = fs.readFileSync(path.join(__dirname, "guilds.json"));
+const guildsInfo = JSON.parse(guildsData);
+
+let storedGuilds = [];
+storedGuilds = guildsInfo;
+
+// When bot is added to a new server, its id is added to the list
+client.on("guildCreate", (guild) => {
+  console.log(`joined ${guild.name} with id: ${guild.id}`);
+  storedGuilds.push(guild.id);
+  updateGuilds(storedGuilds);
 });
 
 client.login(token);
@@ -22,6 +40,7 @@ const foldersPath = path.join(__dirname, "commands");
 const folders = fs.readdirSync(foldersPath);
 
 for (const folder of folders) {
+  console.log("reading folders");
   const commandsPath = path.join(foldersPath, folder);
   const commandFiles = fs
     .readdirSync(commandsPath)
@@ -60,7 +79,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
   const defaultCdDuration = 3;
   const cdAmount = (command.cooldown ?? defaultCdDuration) * 1000;
 
-  console.log(timestamps);
   if (timestamps.has(interaction.user.id)) {
     const expiration = timestamps.get(interaction.user.id) + cdAmount;
 
@@ -72,7 +90,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
       });
     }
   }
-  console.log(interaction.user.id);
 
   timestamps.set(interaction.user.id, now);
 
