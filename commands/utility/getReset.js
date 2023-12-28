@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const getTimes = require("../../utils/time");
 
-let nextReset = Date.parse("21 Dec 2023 10:00:00 EST");
+let nextReset = Date.parse("24 Dec 2023 10:00:00 EST");
 
 module.exports = {
   cooldown: 5,

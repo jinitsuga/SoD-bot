@@ -4,6 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const updateGuilds = require("../bot/utils/updateGuilds");
+const checkTime = require("./utils/sendWarning");
 
 const { Client, Collection, Events, GatewayIntentBits } = require("discord.js");
 
@@ -12,7 +13,6 @@ const token = process.env.DISCORD_TOKEN;
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 });
-
 client.once(Events.ClientReady, (readyClient) => {
   console.log(`Ready. Logged in as ${readyClient.user.tag}`);
 });
@@ -59,6 +59,7 @@ for (const folder of folders) {
   }
 }
 
+// Interactions + command cooldowns
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
@@ -113,3 +114,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   }
 });
+
+// 24h warning setup
+// 172800000 = 48 hrs in ms (will be 24 hrs in the future)
+let warningSent = false;
+
+if (checkTime() <= 172800000 && !warningSent) {
+  console.log("SEND WARNING MF");
+  warningSent = true;
+}
