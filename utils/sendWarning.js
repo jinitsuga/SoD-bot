@@ -1,3 +1,4 @@
+const { PermissionFlagsBits } = require("discord.js");
 const getTimes = require("./time");
 
 function checkTime() {
@@ -22,7 +23,19 @@ async function sendWarning(guilds, client) {
     guilds.map(async (guildId) => {
       try {
         const guild = await client.guilds.fetch(guildId);
-        console.log(client.user);
+        const textChannelIds = guild.channels.cache
+          .filter((chan) => chan.type === 0)
+          .map((channel) => channel.id);
+
+        console.log(
+          textChannelIds.map((id) => {
+            return guild.members.me
+              .permissionsIn(id)
+              .has(PermissionFlagsBits.SendMessages);
+          })
+        );
+
+        // console.log("MEMBERS", client.guilds.cache.get(guildId).members.me);
         // console.log(
         //   guild.me
         //     .permissionsIn(guild.channels.cache.find((chan) => chan.type === 0))
