@@ -27,33 +27,27 @@ async function sendWarning(guilds, client) {
           .filter((chan) => chan.type === 0)
           .map((channel) => channel.id);
 
-        console.log(
-          textChannelIds.map((id) => {
-            return guild.members.me
+        textChannelIds.map((id) => {
+          if (
+            guild.members.me
               .permissionsIn(id)
-              .has(PermissionFlagsBits.SendMessages);
-          })
-        );
+              .has(PermissionFlagsBits.SendMessages)
+          ) {
+            const allowedChannel = guild.channels.cache.get(id);
+            console.log(allowedChannel);
+            allowedChannel.send("hello frens");
+          }
+        });
 
-        // console.log("MEMBERS", client.guilds.cache.get(guildId).members.me);
         // console.log(
-        //   guild.me
-        //     .permissionsIn(guild.channels.cache.find((chan) => chan.type === 0))
-        //     .has()
+        //   textChannelIds.map((id) => {
+        //     return guild.members.me
+        //       .permix`ssionsIn(id)
+        //       .has(PermissionFlagsBits.SendMessages);
+        //   })
         // );
 
-        // const writeableChannel = guild.channels.cache.find(
-        //   (channel) =>
-        //     channel.type === 0 &&
-        //     channel.permissionsFor(client.user).has("SEND_MESSAGES")
-        // );
-        // // console.log(writeableChannel);
-
-        // if (writeableChannel) {
-        //   await writeableChannel.send(
-        //     "hola capos, se resetea bfd en menos de un dia"
-        //   );
-        // }
+        // Pending: map over channels (similar to above) and if write permissions are true, send the warning
       } catch (error) {
         console.error("Error processing guild ids", error.message);
       }
