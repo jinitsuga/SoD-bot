@@ -130,4 +130,4 @@ setTimeout(() => {
   } else {
     warningSent = false;
   }
-}, 8000);
+}, 3600);
