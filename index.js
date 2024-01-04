@@ -119,11 +119,15 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 // 24h warning setup
 // 172800000 = 48 hrs in ms (will be 24 hrs in the future)
+
 let warningSent = false;
+
 setTimeout(() => {
-  if (checkTime() <= 172800000 && !warningSent) {
+  if (checkTime() <= 86400000 && !warningSent) {
     console.log("SEND WARNING MF");
     sendWarning(storedGuilds, client);
     warningSent = true;
+  } else {
+    warningSent = false;
   }
-}, 3000);
+}, 8000);

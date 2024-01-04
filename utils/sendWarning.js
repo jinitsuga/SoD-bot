@@ -1,5 +1,5 @@
 const { PermissionFlagsBits } = require("discord.js");
-const getTimes = require("./time");
+const getTimeLeft = require("./time");
 
 function checkTime() {
   let nextReset = Date.parse("24 Dec 2023 10:00:00 EST");
@@ -13,12 +13,16 @@ function checkTime() {
 
   let timeLeft = nextReset - rightNow;
 
-  // 48 hours to miliseconds = 172800000
   return timeLeft;
 }
 
+// 24 hours to miliseconds = 86400000
+
 async function sendWarning(guilds, client) {
   console.log("sending warning...");
+
+  const { hoursLeft } = getTimeLeft(checkTime() / 1000);
+
   await Promise.all(
     guilds.map(async (guildId) => {
       try {
@@ -34,20 +38,11 @@ async function sendWarning(guilds, client) {
               .has(PermissionFlagsBits.SendMessages)
           ) {
             const allowedChannel = guild.channels.cache.get(id);
-            console.log(allowedChannel);
-            allowedChannel.send("hello frens");
+            allowedChannel.send(
+              `BFD resets in ${hoursLeft}hrs. Make sure you've made use of this lockout :)`
+            );
           }
         });
-
-        // console.log(
-        //   textChannelIds.map((id) => {
-        //     return guild.members.me
-        //       .permix`ssionsIn(id)
-        //       .has(PermissionFlagsBits.SendMessages);
-        //   })
-        // );
-
-        // Pending: map over channels (similar to above) and if write permissions are true, send the warning
       } catch (error) {
         console.error("Error processing guild ids", error.message);
       }
